@@ -27,7 +27,7 @@ public class UserController {
         return "userList";
     }
 
-    @GetMapping("{user}")
+    @GetMapping("{user}")//идентификатор, в PathVariable получаем сразу ссылку на user (хотя в пути стоит id)
     public String userEditForm(@PathVariable User user, Model model) {
         model.addAttribute("user", user);
         model.addAttribute("roles", Role.values());
