@@ -1,15 +1,21 @@
 package com.shvetsovg.sweater.domain;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity // This tells Hibernate to make a table out of this class
 public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
+    @NotBlank(message = "Please fill the message")
+    @Length(max = 2048, message = "Message too long (more than 2048 chars)")
     private String text;
+    @Length(max = 255, message = "Tag too long (more than 255 chars)")
     private String tag;
     private String filename;
 
@@ -31,7 +37,7 @@ public class Message {
 
     }
 
-    public Integer getId() { return id; }
+    public Long getId() { return id; }
 
     public String getText() {
         return text;

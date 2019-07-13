@@ -8,15 +8,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Controller
 public class MainController {
@@ -52,18 +57,22 @@ public class MainController {
     @PostMapping("add")
     public String add(
             @AuthenticationPrincipal User user,
-            @RequestParam String text,
-            @RequestParam String tag, Map<String, Object> model,
+            @Valid Message message,
+            BindingResult bindingResult,//должен идти всегда перед Model, относится к валидации. Список аргументов и сообщений ошибок валидации
+            Model model,
             @RequestParam("file") MultipartFile file
     ) throws IOException {
-        if(text != null && !text.isEmpty()) {
-            //создаем сообщение
-            Message message = new Message(text, tag, user);
+        //создаем сообщение
+        message.setAuthor(user);
 
-            if(file != null && !file.getOriginalFilename().isEmpty())
-            {
+        if(bindingResult.hasErrors()) {
+            Map<String, String> errorsMap = ControlleUtils.getErrors(bindingResult);//перезаписываем ошибки валидации в мапу через Stream.api
+            model.mergeAttributes(errorsMap);
+            model.addAttribute("message", message);
+        } else {
+            if (file != null && !file.getOriginalFilename().isEmpty()) {
                 File uploadDir = new File(uploadPath);
-                if(!uploadDir.exists()) {
+                if (!uploadDir.exists()) {
                     uploadDir.mkdir();
                 }
 
@@ -73,14 +82,17 @@ public class MainController {
                 file.transferTo(new File(uploadPath + "/" + resultFilename));
                 message.setFilename(resultFilename);
             }
+
+            model.addAttribute("message", null); //опустошаем сообщения, чтобы после добавления сообщения, форма была закрыта (см. шаблон main.ftl)
+
             //сохраняем в базу
             messageRepo.save(message);
         }
         //берем из репозитория
         Iterable<Message> messages = messageRepo.findAll();
         //положили в модель
-        model.put("messages", messages);
-        model.put("filter", "");
+        model.addAttribute("messages", messages);
+        model.addAttribute("filter", "");
         //выводим пользователю
         return "main";
     }
