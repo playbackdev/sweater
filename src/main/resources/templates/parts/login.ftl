@@ -32,6 +32,11 @@
                 <#if emailError??><div class="invalid-feedback">${emailError}</div></#if>
             </div>
         </div>
+
+        <div class="form-group row">
+            <div class="g-recaptcha" data-sitekey="6Ldeu7MUAAAAAL868mqoL7P8AhzACtyXyPbPZUjT"></div>
+            <#if captchaError??><div class="alert alert-danger">${captchaError}</div></#if>
+        </div>
         </#if>
 
         <input type="hidden" name="_csrf" value="${_csrf.token}" />
@@ -48,5 +53,11 @@
     <form action="/logout" method="post" class="ml-2">
         <input type="hidden" name="_csrf" value="${_csrf.token}" />
         <button type="submit" class="btn btn-secondary">Sign Out</button>
+    </form>
+</#macro>
+
+<#macro loginbutton>
+    <form action="/login" method="get" class="ml-2">
+        <button type="submit" class="btn btn-primary">Sign in</button>
     </form>
 </#macro>
