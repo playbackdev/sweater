@@ -31,8 +31,8 @@
 
         <div class="navbar-text">${name}</div>
         <#if known>
-        <@l.logout />
-            <#else>
+            <@l.logout />
+        <#else>
             <@l.loginbutton />
         </#if>
     </div>
