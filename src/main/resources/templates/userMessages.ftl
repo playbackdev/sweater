@@ -35,8 +35,10 @@
         </div>
     </div>
 <#if isCurrentUser>
+    <#if message??>
     <!-- Message Edit collapse Form -->
     <#include "parts/messageEdit.ftl" />
+    </#if>
 </#if>
 
     <!-- Message list -->

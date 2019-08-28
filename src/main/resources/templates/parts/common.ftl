@@ -14,6 +14,8 @@
 
     <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
 
+    <script src="https://kit.fontawesome.com/0eb5f40189.js"></script>
+
 </head>
 <body>
 <#include "navbar.ftl">
